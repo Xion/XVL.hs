@@ -12,13 +12,20 @@ homepage:       http://github.com/Xion/xvl.hs
 
 library
   hs-source-dirs:  src
-  build-depends:   base >= 4
+  build-depends:   
+                   base >= 4,
+                   parsec
   ghc-options:     -Wall
-  other-modules:   Text.XVL.Structure
+  other-modules:   
+                   Text.XVL.Structure,
+                   Text.XVL.Parser
 
 executable xvl
   hs-source-dirs:  src
   main-is:         Main.hs
-  build-depends:   base >= 4
+  build-depends:   
+                   base >= 4,
+                   parsec
   ghc-options:     -Wall
+  other-modules:   Text.XVL.Parser
 

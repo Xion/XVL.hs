@@ -1,5 +1,9 @@
 {- Contains the types describing the structure of XVL document. -}
-module Text.XVL.Structure where
+module Text.XVL.Structure (
+        XVLDocument,
+        XVLItem(..),
+        XVLValue(..)
+        ) where
 
 
 type XVLDocument = [XVLItem]
