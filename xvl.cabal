@@ -18,7 +18,8 @@ library
   ghc-options:     -Wall
   other-modules:   
                    Text.XVL.Structure,
-                   Text.XVL.Parser
+                   Text.XVL.Parser,
+                   Text.XVL
 
 executable xvl
   hs-source-dirs:  src

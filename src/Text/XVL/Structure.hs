@@ -16,6 +16,8 @@ data XVLItem = XVLSection {
                    xvlKey :: String,
                    xvlValue :: Maybe XVLValue
                }
+               deriving (Show)
                
 data XVLValue = XVLText String
               | XVLArray [XVLValue]
+                deriving (Show)
