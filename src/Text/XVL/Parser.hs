@@ -26,8 +26,7 @@ document :: CharParser () XVLDocument
 document = items
 
 items :: CharParser () [XVLItem]
-items = spaces >> item `sepEndBy` itemSep
-        where itemSep = many1 (space <|> oneOf ",;")
+items = spaces >> item `sepEndBy` separator
 
 item :: CharParser () XVLItem
 item = try section <|> try keyValue <?> "section or key-value pair"
@@ -39,7 +38,7 @@ section = liftM2 XVLSection identifier content
 keyValue :: CharParser () XVLItem
 keyValue =  liftM2 XVLKeyValue identifier maybeValue
             where maybeValue = optionMaybe (eq >> value)
-                  eq = spaces >> char '=' >> spaces     
+                  eq = spaces >> char '=' >> spaces
 
 value :: CharParser () XVLValue
 value = textValue <|> arrayValue <?> "text or array"
@@ -50,7 +49,8 @@ textValue = XVLText `liftM` (longTextValue <|> shortTextValue)
                   shortTextValue = identifier
 
 arrayValue :: CharParser () XVLValue            
-arrayValue = XVLArray `liftM` insideCurly (many value)
+arrayValue = XVLArray `liftM` insideCurly values
+             where values = spaces >> value `sepEndBy` separator
 
 
 -- Common parsing functions
@@ -64,4 +64,7 @@ insideQuotes = betweenChars '"' '"'
 
 identifier :: CharParser () String
 identifier = many1 identifierChar
-             where identifierChar = oneOf $ ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9'] ++ "!@#$%^&*()-_+<>:?/\\|"
+             where identifierChar = oneOf $ ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9'] ++ "!@$%^&*()-_+<>:?/\\|"
+             
+separator :: CharParser () String
+separator = many1 (space <|> oneOf ",;")
