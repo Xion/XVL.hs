@@ -1,0 +1,24 @@
+name:           xvl
+version:        0.1
+cabal-version:  >= 1.2
+build-type:     Simple
+license:        BSD3
+author:         Karol Kuczmarski
+maintainer:     karol.kuczmarski@gmail.com
+stability:      Experimental
+synopsis:       Parser for the XVL format
+description:    Package for parsing the eXtended Values Format (XVL)
+homepage:       http://github.com/Xion/xvl.hs
+
+library
+  hs-source-dirs:  src
+  build-depends:   base >= 4
+  ghc-options:     -Wall
+  other-modules:   Text.XVL.Structure
+
+executable xvl
+  hs-source-dirs:  src
+  main-is:         Main.hs
+  build-depends:   base >= 4
+  ghc-options:     -Wall
+
