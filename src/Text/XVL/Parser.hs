@@ -17,21 +17,24 @@ import Text.XVL.Structure
 
 
 parseXVL :: String -> Either ParseError XVLDocument
-parseXVL input = parse document "(unknown)" input
+parseXVL = parse document "(unknown)"
 
 
 -- Parser definition
 
 document :: CharParser () XVLDocument
-document = many item
+document = items
+
+items :: CharParser () [XVLItem]
+items = spaces >> item `sepEndBy` itemSep
+        where itemSep = many1 (space <|> oneOf ",;")
 
 item :: CharParser () XVLItem
 item = try section <|> try keyValue <?> "section or key-value pair"
 
 section :: CharParser () XVLItem
-section = liftM2 XVLSection identifier itemsInCurly
-          where itemsInCurly = spaces >> insideCurly item `sepBy` itemSep
-                itemSep = spaces >> many (oneOf ",;") 
+section = liftM2 XVLSection identifier content
+          where content = spaces >> insideCurly items
 
 keyValue :: CharParser () XVLItem
 keyValue =  liftM2 XVLKeyValue identifier maybeValue
@@ -47,7 +50,7 @@ textValue = XVLText `liftM` (longTextValue <|> shortTextValue)
                   shortTextValue = identifier
 
 arrayValue :: CharParser () XVLValue            
-arrayValue = XVLArray `liftM` many value
+arrayValue = XVLArray `liftM` insideCurly (many value)
 
 
 -- Common parsing functions
