@@ -7,12 +7,20 @@
             qux = { a, b, "c" }
         }
  -}
-module Text.XVL.Parser () where
+module Text.XVL.Parser (
+        parseXVL
+        ) where
 
+import Control.Monad (liftM, liftM2)
 import Text.ParserCombinators.Parsec
 import Text.XVL.Structure
-import Control.Monad (liftM, liftM2)
 
+
+parseXVL :: String -> Either ParseError XVLDocument
+parseXVL input = parse document "(unknown)" input
+
+
+-- Parser definition
 
 document :: CharParser () XVLDocument
 document = many item
@@ -22,14 +30,13 @@ item = try section <|> try keyValue <?> "section or key-value pair"
 
 section :: CharParser () XVLItem
 section = liftM2 XVLSection identifier itemsInCurly
-          where itemsInCurly = optWS >> insideCurly item `sepBy` itemSep
-                optWS = skipMany whitespace
-                itemSep = try whitespace <|> (optWS >> many (oneOf ",;"))
+          where itemsInCurly = spaces >> insideCurly item `sepBy` itemSep
+                itemSep = spaces >> many (oneOf ",;") 
 
 keyValue :: CharParser () XVLItem
 keyValue =  liftM2 XVLKeyValue identifier maybeValue
             where maybeValue = optionMaybe (eq >> value)
-                  eq = skipMany whitespace >> char '=' >> skipMany whitespace
+                  eq = spaces >> char '=' >> spaces     
 
 value :: CharParser () XVLValue
 value = textValue <|> arrayValue <?> "text or array"
@@ -52,9 +59,6 @@ insideQuotes = betweenChars '"' '"'
         
 -- Base building blocks
 
-identifier :: GenParser Char st String
+identifier :: CharParser () String
 identifier = many1 identifierChar
-identifierChar = oneOf $ ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9'] ++ "!@#$%^&*()-_+<>:?/\\|"
-
-whitespace = many1 whitespaceChar
-whitespaceChar = oneOf " \t\r\n"
+             where identifierChar = oneOf $ ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9'] ++ "!@#$%^&*()-_+<>:?/\\|"
